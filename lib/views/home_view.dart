@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meme_generator/services/api.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -14,14 +15,21 @@ class HomeView extends StatelessWidget {
           future: API.getMemes(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return ListView.builder(
+              return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
                 itemCount: snapshot.data!.data!.memes!.length,
                 itemBuilder: (context, index) {
                   final meme = snapshot.data!.data!.memes![index];
                   // print(meme.name!);
-                  return ListTile(
-                    title: Text(meme.name!),
-                    subtitle: Text(meme.url!),
+                  return GridTile(
+                    child: CachedNetworkImage(
+                      imageUrl: meme.url!,
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
                   );
                 },
               );
